@@ -19,4 +19,4 @@ This project contains two independent services that expose the same functionalit
 
 ### FastAPI
 1. Install dependencies:
-   pip install pydantic fastapi uvicorn
+   `pip install pydantic fastapi uvicorn`
