@@ -4,5 +4,8 @@ from typing import Any
 class Tool(ABC):
     @abstractmethod
     def run(self, **kwargs: Any) -> str:
-        """Each tool must implement the run method."""
         pass
+
+def function_tool(cls):
+    cls.is_function_tool = True
+    return cls

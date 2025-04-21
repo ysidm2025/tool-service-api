@@ -1,11 +1,14 @@
-from pydantic import BaseModel # type: ignore
-from typing import List, Dict, Any
+from pydantic import BaseModel
+from typing import List, Dict
 
 class ToolMetadata(BaseModel):
     tool_name: str
     description: str
     parameters: List[str]
 
-class ToolRequest(BaseModel):
+class ToolCallRequest(BaseModel):
     tool_name: str
-    tool_parameters: Dict[str, Any]
+    tool_parameters: Dict
+
+class NaturalLanguageQuery(BaseModel):
+    query: str
