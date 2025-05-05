@@ -6,9 +6,9 @@ class ToolMetadata(BaseModel):
     description: str
     parameters: List[str]
 
-class ToolCallRequest(BaseModel):
-    tool_name: str
-    tool_parameters: Dict
-
 class NaturalLanguageQuery(BaseModel):
     query: str
+
+class ToolCallRequest(BaseModel):
+    tool_name: str
+    tool_parameters: dict  # Plain `dict` instead of `Dict`

@@ -74,21 +74,41 @@ def get_tool_metadata() -> List[Dict[str, Any]]:
             continue
     return metadata
 
-def get_tool_instances() -> list:  # Avoid using List here as well
+# def get_tool_instances() -> list:  # Avoid using List here as well
+#     tools = load_tools()
+#     instances = []
+
+#     for tool in tools:
+#         try:
+#             run_signature = inspect.signature(tool.run)
+#             parameters = list(run_signature.parameters.keys())[1:]
+#             instance = tool()  # Create an instance of the tool
+#             instances.append({
+#                 "tool_name": tool.__name__,
+#                 "description": tool.__doc__ or "No description provided.",
+#                 "parameters": parameters,
+#                 "function": instance.run  # Link the function that can be called
+#             })
+#         except Exception as e:
+#             print(f"Error instantiating tool {tool.__name__}: {e}")
+#             continue
+#     return instances
+
+def get_tool_instances() -> Dict[str, Dict[str, Any]]:
     tools = load_tools()
-    instances = []
+    instances = {}
 
     for tool in tools:
         try:
             run_signature = inspect.signature(tool.run)
             parameters = list(run_signature.parameters.keys())[1:]
             instance = tool()  # Create an instance of the tool
-            instances.append({
+            instances[tool.__name__] = {
                 "tool_name": tool.__name__,
                 "description": tool.__doc__ or "No description provided.",
                 "parameters": parameters,
                 "function": instance.run  # Link the function that can be called
-            })
+            }
         except Exception as e:
             print(f"Error instantiating tool {tool.__name__}: {e}")
             continue
@@ -119,7 +139,6 @@ def get_tool_instances() -> list:  # Avoid using List here as well
 #                 print(f"Error running tool: {e}")  # Debugging line
 #                 raise RuntimeError(f"Error running tool '{tool_name}': {e}")
 #     raise ValueError(f"Tool '{tool_name}' not found.")
-
 def run_tool(tool_name: str, tool_parameters: Dict[str, Any]) -> Any:
     tools = load_tools()
     print(f"Loaded tools in run_tool: {tools}")  # Debugging line

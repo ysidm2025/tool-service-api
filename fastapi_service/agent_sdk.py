@@ -1,3 +1,4 @@
+import json
 from openai import AsyncOpenAI , OpenAI # type: ignore
 from openai.types.beta.threads import MessageContent , TextContentBlock
 from utils import get_tool_metadata, get_tool_instances
@@ -68,22 +69,111 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 #     else:
 #         return "No meaningful response generated."
 
-def answer_with_tools(query: str) -> str:
-    print(f"Received query: {query}")  # Debugging line
+# def answer_with_tools(query: str) -> str:
+#     print(f"Received query: {query}")  # Debugging line
     
-    # Get tool metadata and instances
-    tools_metadata = get_tool_metadata()
-    tool_instances = get_tool_instances()
+#     # Get tool metadata and instances
+#     tools_metadata = get_tool_metadata()
+#     tool_instances = get_tool_instances()
 
-    # Debugging: Print out loaded tool metadata
-    print(f"Loaded tool metadata: {tools_metadata}")
+#     # Debugging: Print out loaded tool metadata
+#     print(f"Loaded tool metadata: {tools_metadata}")
 
-    # Convert tools to OpenAI-compatible tool schema
-    openai_tools = []
-    for tool in tools_metadata:
-        print(f"Processing tool: {tool['tool_name']}")  # Debugging line
-        openai_tools.append(
-            {
+#     # Convert tools to OpenAI-compatible tool schema
+#     openai_tools = []
+#     for tool in tools_metadata:
+#         print(f"Processing tool: {tool['tool_name']}")  # Debugging line
+#         openai_tools.append(
+#             {
+#                 "type": "function",
+#                 "function": {
+#                     "name": tool["tool_name"],
+#                     "description": tool["description"],
+#                     "parameters": {
+#                         "type": "object",
+#                         "properties": {
+#                             param: {"type": "string"} for param in tool["parameters"]
+#                         },
+#                         "required": tool["parameters"],
+#                     },
+#                 }
+#             }
+#         )
+
+#     print(f"OpenAI tools schema: {openai_tools}")  # Debugging line
+
+#     # Create a new assistant with all tools pre-attached
+#     try:
+#         assistant = client.beta.assistants.create(
+#             name="Tool Agent Assistant",
+#             instructions="You are an assistant that uses tools to answer user queries. Use tools when appropriate and do not just repeat the input.",
+#             tools=openai_tools,
+#             model="gpt-4-turbo"
+#         )
+#         print(f"Assistant created with ID: {assistant.id}")  # Debugging line
+#     except Exception as e:
+#         print(f"Error creating assistant: {e}")
+#         return f"Error creating assistant: {e}"
+
+#     # Create a thread and add the user message
+#     try:
+#         thread = client.beta.threads.create()
+#         print(f"Thread created with ID: {thread.id}")  # Debugging line
+#         client.beta.threads.messages.create(
+#             thread_id=thread.id,
+#             role="user",
+#             content=query
+#         )
+#     except Exception as e:
+#         print(f"Error creating thread or sending message: {e}")
+#         return f"Error creating thread or sending message: {e}"
+
+#     # Run the assistant
+#     try:
+#         run = client.beta.threads.runs.create_and_poll(
+#             thread_id=thread.id,
+#             assistant_id=assistant.id,
+#             tool_choice="auto"
+#         )
+#         print(f"Assistant run completed: {run}")  # Debugging line
+#     except Exception as e:
+#         print(f"Error running assistant: {e}")
+#         return f"Error running assistant: {e}"
+
+#     # Get the latest message from the thread
+#     try:
+#         messages = client.beta.threads.messages.list(thread_id=thread.id)
+#         print(f"Retrieved messages: {messages.data}")  # Debugging line
+#         last_message = messages.data[0]
+#     except Exception as e:
+#         print(f"Error retrieving messages: {e}")
+#         return f"Error retrieving messages: {e}"
+
+#     # # Safely return the response
+#     # if last_message.content and isinstance(last_message.content[0], MessageContent):
+#     #     print(f"Last message content: {last_message.content[0].text.value}")  # Debugging line
+#     #     return last_message.content[0].text.value
+#     # else:
+#     #     print("No meaningful response generated.")  # Debugging line
+#     #     return "No meaningful response generated."
+
+#     # Check if the message content exists and if the first item is a TextContentBlock (or another expected type)
+#     if last_message.content and isinstance(last_message.content[0], TextContentBlock):
+#         print(f"Last message content: {last_message.content[0].text.value}")  # Debugging line
+#         return last_message.content[0].text.value
+#     else:
+#         print("No meaningful response generated.")  # Debugging line
+#         return "No meaningful response generated."
+    
+def answer_with_tools(query: str) -> str:
+    try:
+        tools_metadata = get_tool_metadata()
+        tool_instances = get_tool_instances()  # Should return a dict: {tool_name: tool_instance}
+        
+        # Prepare OpenAI-compatible tool schemas
+        openai_tools = []
+        for tool in tools_metadata:
+            openai_tools.append({
                 "type": "function",
                 "function": {
                     "name": tool["tool_name"],
@@ -96,70 +186,69 @@ def answer_with_tools(query: str) -> str:
                         "required": tool["parameters"],
                     },
                 }
-            }
-        )
+            })
 
-    print(f"OpenAI tools schema: {openai_tools}")  # Debugging line
-
-    # Create a new assistant with all tools pre-attached
-    try:
+        # Step 1: Create Assistant
         assistant = client.beta.assistants.create(
             name="Tool Agent Assistant",
-            instructions="Use the tools to answer questions related to maintenance, site operations, or other topics.",
+            instructions="Use tools when appropriate to solve user queries. any query by user not related to tool we have provided you reply with I can only help you with website related queries",
             tools=openai_tools,
             model="gpt-4-turbo"
         )
-        print(f"Assistant created with ID: {assistant.id}")  # Debugging line
-    except Exception as e:
-        print(f"Error creating assistant: {e}")
-        return f"Error creating assistant: {e}"
 
-    # Create a thread and add the user message
-    try:
+        # Step 2: Create Thread and Add Message
         thread = client.beta.threads.create()
-        print(f"Thread created with ID: {thread.id}")  # Debugging line
         client.beta.threads.messages.create(
             thread_id=thread.id,
             role="user",
             content=query
         )
-    except Exception as e:
-        print(f"Error creating thread or sending message: {e}")
-        return f"Error creating thread or sending message: {e}"
 
-    # Run the assistant
-    try:
-        run = client.beta.threads.runs.create_and_poll(
-            thread_id=thread.id,
-            assistant_id=assistant.id,
-            tool_choice="auto"
-        )
-        print(f"Assistant run completed: {run}")  # Debugging line
-    except Exception as e:
-        print(f"Error running assistant: {e}")
-        return f"Error running assistant: {e}"
+        # Step 3: Run Assistant
+        run = client.beta.threads.runs.create(thread_id=thread.id, assistant_id=assistant.id)
 
-    # Get the latest message from the thread
-    try:
+        # Step 4: Poll for Tool Calls
+        while True:
+            run_status = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
+            if run_status.status == "requires_action":
+                tool_calls = run_status.required_action.submit_tool_outputs.tool_calls
+                tool_outputs = []
+
+                for tool_call in tool_calls:
+                    tool_name = tool_call.function.name
+                    arguments = json.loads(tool_call.function.arguments)
+
+                    tool_info = tool_instances.get(tool_name)
+                    if tool_info:
+                        result = tool_info["function"](**arguments)
+                        tool_outputs.append({
+                            "tool_call_id": tool_call.id,
+                            "output": result
+                        })
+                    else:
+                        tool_outputs.append({
+                            "tool_call_id": tool_call.id,
+                            "output": f"Tool '{tool_name}' not found."
+                        })
+
+                # Submit tool outputs and continue
+                run = client.beta.threads.runs.submit_tool_outputs(
+                    thread_id=thread.id,
+                    run_id=run.id,
+                    tool_outputs=tool_outputs
+                )
+            elif run_status.status in ["completed", "failed", "cancelled"]:
+                break
+
+        # Step 5: Get Final Message
         messages = client.beta.threads.messages.list(thread_id=thread.id)
-        print(f"Retrieved messages: {messages.data}")  # Debugging line
         last_message = messages.data[0]
+
+        if last_message.content and isinstance(last_message.content[0], TextContentBlock):
+            return last_message.content[0].text.value
+        else:
+            return "No meaningful response generated."
+
     except Exception as e:
-        print(f"Error retrieving messages: {e}")
-        return f"Error retrieving messages: {e}"
+        return f"Error occurred: {e}"
 
-    # # Safely return the response
-    # if last_message.content and isinstance(last_message.content[0], MessageContent):
-    #     print(f"Last message content: {last_message.content[0].text.value}")  # Debugging line
-    #     return last_message.content[0].text.value
-    # else:
-    #     print("No meaningful response generated.")  # Debugging line
-    #     return "No meaningful response generated."
-
-    # Check if the message content exists and if the first item is a TextContentBlock (or another expected type)
-    if last_message.content and isinstance(last_message.content[0], TextContentBlock):
-        print(f"Last message content: {last_message.content[0].text.value}")  # Debugging line
-        return last_message.content[0].text.value
-    else:
-        print("No meaningful response generated.")  # Debugging line
-        return "No meaningful response generated."
