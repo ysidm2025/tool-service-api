@@ -1,48 +1,56 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+using MyDotNetApi.Models;
+using MyDotNetApi.Services;
 
-[ApiController]
-[Route("[controller]")]
-public class ApiController : ControllerBase
+namespace MyDotNetApi.Controllers
 {
-    private readonly ToolService _toolService;
-
-    public ApiController(ToolService toolService)
+    [ApiController]
+    [Route("/")]
+    public class ApiController : ControllerBase
     {
-        _toolService = toolService;
-    }
+        private readonly ToolService _toolService;
+        private readonly OpenAIAgentService _agentService;
 
-    [HttpGet("bot_capabilities")]
-    public ActionResult<IEnumerable<ToolMetadata>> GetCapabilities()
-    {
-        try
+        public ApiController(ToolService toolService, OpenAIAgentService agentService)
         {
-            Console.WriteLine("Bot Capabilities Endpoint Hit");
-            return Ok(_toolService.GetToolMetadata());
+            _toolService = toolService;
+            _agentService = agentService;
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, ex.Message);
-        }
-    }
 
-    [HttpPost("bot_response")]
-    public ActionResult<string> BotResponse([FromBody] ToolRequest request)
-    {
-        try
+        [HttpGet("bot_capabilities")]
+        public IActionResult GetBotCapabilities()
         {
-            if (string.IsNullOrWhiteSpace(request.ToolName))
+            var tools = _toolService.GetAllTools();
+            return Ok(tools);
+        }
+
+        [HttpPost("bot_response")]
+        public async Task<IActionResult> ExecuteTool([FromBody] ToolExecutionRequest request)
+        {
+            try
             {
-                return BadRequest("Tool name is required.");
+                var result = await _toolService.ExecuteToolAsync(request.ToolName, request.Parameters);
+                return Ok(new { result });
             }
-
-            var parameters = request.ToolParameters ?? new Dictionary<string, string>();
-            return Ok(_toolService.RunTool(request.ToolName, parameters));
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { error = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Internal error", details = ex.Message });
+            }
         }
-        catch (Exception ex)
+
+        [HttpPost("ask_agent")]
+        public async Task<IActionResult> AskAgent([FromBody] AgentQueryRequest request)
         {
-            return StatusCode(500, ex.Message);
+            var response = await _agentService.AskAgentAsync(request.Query);
+            return Ok(new { response });
         }
     }
 }

@@ -1,12 +1,13 @@
-using System.ComponentModel;
+using System.Threading.Tasks;
 
-[Description(@"
-    Fetches weather information for a given city.
-")]
-public class WeatherTool : Tool
+namespace MyDotNetApi.Tools
 {
-    public override string Run(string city, string units)
+    [FunctionTool("weather_tool", "Returns weather information.")]
+    public class WeatherTool
     {
-        return $"Weather in {city} is 15°C with units {units}";
+        public static async Task<string> RunAsync(string city)
+        {
+            return await Task.FromResult($"The weather in {city} is sunny with a temperature of 25°C.");
+        }
     }
 }

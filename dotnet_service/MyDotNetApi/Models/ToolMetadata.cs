@@ -1,20 +1,17 @@
-using System.Text.Json.Serialization;
+using System.Collections.Generic;
 
-public class ToolMetadata
+namespace MyDotNetApi.Models
 {
-    [JsonPropertyName("tool_name")]
-    public string ToolName { get; set; }
-
-    [JsonPropertyName("description")]
-    public string Description { get; set; }
-
-    [JsonPropertyName("parameters")]
-    public string[] Parameters { get; set; }
-
-    public ToolMetadata(string toolName, string description, string[] parameters)
+    public class ToolMetadata
     {
-        ToolName = toolName;
-        Description = description;
-        Parameters = parameters;
+        public required string Name { get; set; }
+        public required string Description { get; set; }
+        public required List<ToolParameterMetadata> Parameters { get; set; }
+    }
+
+    public class ToolParameterMetadata
+    {
+        public required string Name { get; set; }
+        public required string Type { get; set; }
     }
 }

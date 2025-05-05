@@ -1,57 +1,128 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.ComponentModel;
-using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using MyDotNetApi.Models;
+using ToolParameterInfo = MyDotNetApi.Models.ParameterInfo;
 
-public class ToolService
+namespace MyDotNetApi.Services
 {
-    public ToolMetadata[] GetToolMetadata()
+    public class ToolService
     {
-        return AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(a => a.GetTypes())
-            .Where(t => t.IsSubclassOf(typeof(Tool))) // Only subclasses of Tool
-            .Select(t => 
-            {
-                var method = t.GetMethod("Run");
-                var parameters = method?.GetParameters().Select(p => p.Name ?? "").ToArray() ?? new string[0];
+        private readonly ILogger<ToolService> _logger;
+        private readonly Dictionary<string, Type> _toolTypes;
 
-                var descriptionAttr = t.GetCustomAttribute<DescriptionAttribute>();
-                var description = descriptionAttr != null ? descriptionAttr.Description : "No Description";
-
-                return new ToolMetadata(t.Name, description, parameters);
-            })
-            .ToArray();
-    }
-
-    public string RunTool(string toolName, Dictionary<string, string> parameters)
-    {
-        if (string.IsNullOrEmpty(toolName)) 
-            throw new ArgumentException("Tool name cannot be null or empty", nameof(toolName));
-
-        var toolType = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(a => a.GetTypes())
-            .FirstOrDefault(t => t.Name.Equals(toolName, StringComparison.OrdinalIgnoreCase));
-
-        if (toolType == null)
-            throw new Exception("Tool not found");
-
-        var method = toolType.GetMethod("Run");
-        if (method == null)
-            throw new Exception("Run method not found");
-
-        var toolInstance = Activator.CreateInstance(toolType);
-        var methodParams = method.GetParameters();
-
-        var args = methodParams.Select(p =>
+        public ToolService(ILogger<ToolService> logger)
         {
-            if (parameters.TryGetValue(p.Name!, out var value))
-                return Convert.ChangeType(value, p.ParameterType);
-            else
-                throw new Exception($"Missing required parameter: {p.Name}");
-        }).ToArray();
+            _logger = logger;
+            _toolTypes = new Dictionary<string, Type>();
+            DiscoverTools();
+        }
 
-        var result = method.Invoke(toolInstance, args);
-        return result?.ToString() ?? "No result returned";
+        private void DiscoverTools()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var toolTypes = assembly.GetTypes()
+                .Where(t => t.GetCustomAttribute<FunctionToolAttribute>() != null);
+
+            foreach (var type in toolTypes)
+            {
+                var attribute = type.GetCustomAttribute<FunctionToolAttribute>();
+                if (attribute != null)
+                {
+                    _toolTypes[attribute.Name] = type;
+                }
+            }
+        }
+
+        public List<ToolInfo> GetAllTools()
+        {
+            var tools = new List<ToolInfo>();
+
+            foreach (var (name, type) in _toolTypes)
+            {
+                var attribute = type.GetCustomAttribute<FunctionToolAttribute>();
+                if (attribute == null) continue;
+
+                var parameters = new List<ToolParameterInfo>();
+                var method = type.GetMethod("Run");
+                if (method == null) continue;
+
+                foreach (var param in method.GetParameters())
+                {
+                    parameters.Add(new ToolParameterInfo
+                    {
+                        Name = param.Name ?? throw new InvalidOperationException($"Parameter name is null for tool {name}"),
+                        Type = param.ParameterType.Name,
+                        IsRequired = !param.IsOptional
+                    });
+                }
+
+                tools.Add(new ToolInfo
+                {
+                    Name = attribute.Name,
+                    Description = attribute.Description,
+                    Parameters = parameters
+                });
+            }
+
+            return tools;
+        }
+
+        public async Task<object> ExecuteToolAsync(string toolName, Dictionary<string, object> parameters)
+        {
+            if (!_toolTypes.TryGetValue(toolName, out var toolType))
+            {
+                throw new KeyNotFoundException($"Tool '{toolName}' not found");
+            }
+
+            var instance = Activator.CreateInstance(toolType);
+            if (instance == null)
+            {
+                throw new InvalidOperationException($"Failed to create instance of tool '{toolName}'");
+            }
+
+            var method = toolType.GetMethod("Run") ?? throw new InvalidOperationException($"Run method not found for tool '{toolName}'");
+            var methodParams = method.GetParameters();
+            var paramValues = new object[methodParams.Length];
+
+            for (int i = 0; i < methodParams.Length; i++)
+            {
+                var param = methodParams[i];
+                var paramName = param.Name ?? throw new InvalidOperationException($"Parameter name is null for tool {toolName}");
+
+                if (parameters.TryGetValue(paramName, out var value))
+                {
+                    try
+                    {
+                        paramValues[i] = Convert.ChangeType(value, param.ParameterType);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ArgumentException($"Invalid value for parameter '{paramName}': {ex.Message}");
+                    }
+                }
+                else if (param.IsOptional)
+                {
+                    paramValues[i] = param.DefaultValue ?? throw new InvalidOperationException($"Default value is null for optional parameter {paramName}");
+                }
+                else
+                {
+                    throw new ArgumentException($"Required parameter '{paramName}' not provided");
+                }
+            }
+
+            if (method.ReturnType.IsAssignableTo(typeof(Task)))
+            {
+                var task = (Task)method.Invoke(instance, paramValues)!;
+                await task;
+                var resultProperty = task.GetType().GetProperty("Result");
+                return resultProperty?.GetValue(task) ?? throw new InvalidOperationException("Task result is null");
+            }
+
+            return method.Invoke(instance, paramValues) ?? throw new InvalidOperationException("Method result is null");
+        }
     }
-}
+} 
