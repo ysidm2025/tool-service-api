@@ -1,5 +1,7 @@
 .env
 ".env"
-
+assignment_2.sln
 __pycache__/
 *.pyc
+.vscode
+.config
