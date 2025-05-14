@@ -1,0 +1,391 @@
+{
+    "StatusCode": 200,
+    "ErrorMessage": null,
+    "Response": {
+        "property_info": [
+            {
+                "name": "DNC Chat IQ Elite Residency",
+                "address": "13th Street. 47 W 13th St",
+                "city": "New York",
+                "state": "NY",
+                "zipcode": "10011",
+                "url": "https://www.crmiqqa.com/apartments/ny/new-york/dnc-chat-iq-elite-residency/index.aspx",
+                "description": "",
+                "email": "Peter.jones.test@gmail.com",
+                "phone": "(805) 001-2111",
+                "Latitude": 40.736449,
+                "Longitude": -73.996278,
+                "LocalTime": "12:32:02 PM",
+                "TimeZone": "America/New_York"
+            }
+        ],
+        "office_hours": [
+            {
+                "Day": "Monday-Friday",
+                "StartTime": "09:00",
+                "EndTime": "17:00",
+                "Iday": 8
+            },
+            {
+                "Day": "Saturday",
+                "StartTime": "09:00",
+                "EndTime": "17:00",
+                "Iday": 6
+            },
+            {
+                "Day": "Sunday",
+                "StartTime": "11:00",
+                "EndTime": "16:00",
+                "Iday": 7
+            }
+        ],
+        "community_amenities": [
+            {
+                "AmenityName": "Controlled Access/Gated",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Skylight",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Child Care",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Hardwood Floors",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Carpeting",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Clubhouse",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Bike Racks",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Gourmet Kitchen",
+                "ImageURL": "https://cdn.rcqatol.com/dmslivecafe/3/506589/Gourmet Kitchen.jpg",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Ceiling Fan",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Indoor Basketball Court",
+                "ImageURL": "https://cdn.rcqatol.com/dmslivecafe/3/506589/basketball2.jpg,https://cdn.rcqatol.com/dmslivecafe/3/506589/basketball1.jpg",
+                "ImageAltText": "Indoor basket ball court"
+            },
+            {
+                "AmenityName": "Microwave",
+                "ImageURL": "https://cdn.rcqatol.com/dmslivecafe/3/506589/OIP.jpg",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Swimming Pool",
+                "ImageURL": "https://cdn.rcqatol.com/dmslivecafe/3/506589/swimming pool.jpg",
+                "ImageAltText": "A large swimming pool"
+            },
+            {
+                "AmenityName": "Air Conditioner",
+                "ImageURL": "",
+                "ImageAltText": "A large swimming pool"
+            },
+            {
+                "AmenityName": "Cable Ready",
+                "ImageURL": "",
+                "ImageAltText": "A large swimming pool"
+            },
+            {
+                "AmenityName": "Dishwasher",
+                "ImageURL": "",
+                "ImageAltText": "A large swimming pool"
+            },
+            {
+                "AmenityName": "Disposal",
+                "ImageURL": "",
+                "ImageAltText": "A large swimming pool"
+            },
+            {
+                "AmenityName": "Fireplace",
+                "ImageURL": "https://cdn.rcqatol.com/dmslivecafe/3/506589/fireplace.jpg",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Walk-in Closet",
+                "ImageURL": "",
+                "ImageAltText": ""
+            }
+        ],
+        "pet_policy": [
+            {
+                "index": 2,
+                "PetType": "Dogs",
+                "Description": "",
+                "OneTimeFee": 0,
+                "RentPerMonth": 5,
+                "MaxWeight": 125,
+                "Deposit": 0,
+                "MaxAllowed": 2,
+                "Restrictions": "Dobermans are NOT allowed",
+                "Comment": ""
+            }
+        ],
+        "apartment_amenities": [
+            {
+                "AmenityName": "Skylight",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Hardwood Floors",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Carpeting",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Gourmet Kitchen",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Ceiling Fan",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Microwave",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Air Conditioner",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Cable Ready",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Dishwasher",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Disposal",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Fireplace",
+                "ImageURL": "",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "Walk-in Closet",
+                "ImageURL": "",
+                "ImageAltText": ""
+            }
+        ],
+        "floorplans": [
+            {
+                "Name": "1 Bed",
+                "Bedrooms": 1,
+                "Baths": 1,
+                "MinSqft": 900,
+                "MaxSqft": 900,
+                "MinRent": 504,
+                "MaxRent": 899,
+                "EarliestAvailability": "05/14/2025"
+            },
+            {
+                "Name": "3 bed /Duplex",
+                "Bedrooms": 3,
+                "Baths": 3,
+                "MinSqft": 2500,
+                "MaxSqft": 2500,
+                "MinRent": 500,
+                "MaxRent": 899,
+                "EarliestAvailability": "05/14/2025"
+            },
+            {
+                "Name": "Aspire",
+                "Bedrooms": 3,
+                "Baths": 2,
+                "MinSqft": 1500,
+                "MaxSqft": 1500,
+                "MinRent": 500,
+                "MaxRent": 899,
+                "EarliestAvailability": "05/14/2025"
+            },
+            {
+                "Name": "Queenbed /2bed",
+                "Bedrooms": 2,
+                "Baths": 1,
+                "MinSqft": 1200,
+                "MaxSqft": 1200,
+                "MinRent": 501,
+                "MaxRent": 899,
+                "EarliestAvailability": "05/14/2025"
+            },
+            {
+                "Name": "Studio",
+                "Bedrooms": 0,
+                "Baths": 0,
+                "MinSqft": 700,
+                "MaxSqft": 700,
+                "MinRent": 500,
+                "MaxRent": 600,
+                "EarliestAvailability": "05/14/2025"
+            }
+        ],
+        "lease_terms": {
+            "Terms": [
+                6,
+                9,
+                10,
+                11,
+                12,
+                18,
+                24
+            ]
+        },
+        "application_fees": [
+            {
+                "Description": "Administration Fee",
+                "MinAmount": 22,
+                "MaxAmount": 22
+            },
+            {
+                "Description": "Application Fee",
+                "MinAmount": 25,
+                "MaxAmount": 45
+            },
+            {
+                "Description": "Legal Fees",
+                "MinAmount": 50,
+                "MaxAmount": 50
+            }
+        ],
+        "specials_and_promotions": [
+            {
+                "Description": "Studio - $105.00 $105 Look & Lease for 6+ Month Lease"
+            },
+            {
+                "Description": "Studio - $77.77 G6 flat 0/0 one time desc"
+            }
+        ],
+        "affordable_housing_program": "Initiate the human_handoff tool",
+        "security_deposit": [
+            {
+                "Bedrooms": 1,
+                "MinDeposit": 1000,
+                "MaxDeposit": 1000
+            },
+            {
+                "Bedrooms": 3,
+                "MinDeposit": 2500,
+                "MaxDeposit": 5000
+            },
+            {
+                "Bedrooms": 2,
+                "MinDeposit": 2000,
+                "MaxDeposit": 2000
+            },
+            {
+                "Bedrooms": 0,
+                "MinDeposit": 700,
+                "MaxDeposit": 700
+            }
+        ],
+        "move_in_fees": [
+            {
+                "Bedrooms": 0,
+                "Description": "Cleaning fees",
+                "Amount": 20.0,
+                "Recurring": true
+            },
+            {
+                "Bedrooms": 0,
+                "Description": "cablet",
+                "Amount": 33.0,
+                "Recurring": true
+            },
+            {
+                "Bedrooms": 1,
+                "Description": "County Tax",
+                "Amount": 39.0,
+                "Recurring": false
+            },
+            {
+                "Bedrooms": 1,
+                "Description": "Pet Deposit per pet",
+                "Amount": 44.0,
+                "Recurring": false
+            },
+            {
+                "Bedrooms": 2,
+                "Description": "Cable",
+                "Amount": 29.0,
+                "Recurring": true
+            },
+            {
+                "Bedrooms": 2,
+                "Description": "Parking",
+                "Amount": 30.0,
+                "Recurring": true
+            },
+            {
+                "Bedrooms": 2,
+                "Description": "Utilities Drinking Soft Water",
+                "Amount": 35.0,
+                "Recurring": true
+            },
+            {
+                "Bedrooms": 2,
+                "Description": "Renters Insurance",
+                "Amount": 51.0,
+                "Recurring": true
+            },
+            {
+                "Bedrooms": 2,
+                "Description": "utilities Sewer",
+                "Amount": 15.0,
+                "Recurring": true
+            },
+            {
+                "Bedrooms": 2,
+                "Description": "Electricity",
+                "Amount": 90.0,
+                "Recurring": true
+            },
+            {
+                "Bedrooms": 3,
+                "Description": "Misc Deposit",
+                "Amount": 56.0,
+                "Recurring": false
+            }
+        ]
+    },
+    "ErrorTrace": null
+}

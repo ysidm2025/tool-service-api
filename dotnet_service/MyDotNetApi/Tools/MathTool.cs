@@ -1,9 +1,8 @@
-using System;
 using System.Threading.Tasks;
 
 namespace MyDotNetApi.Tools
 {
-    [FunctionTool("math_tool", "Performs basic arithmetic operations.")]
+    [FunctionTool("math_tool", "Performs arithmetic operations.")]
     public class MathTool
     {
         public static async Task<string> RunAsync(double a, double b, string operation)
@@ -13,7 +12,7 @@ namespace MyDotNetApi.Tools
                 "add" => a + b,
                 "subtract" => a - b,
                 "multiply" => a * b,
-                "divide" => b != 0 ? a / b : throw new ArgumentException("Division by zero."),
+                "divide" => b != 0 ? a / b : throw new ArgumentException("Cannot divide by zero."),
                 _ => throw new ArgumentException("Invalid operation.")
             };
 

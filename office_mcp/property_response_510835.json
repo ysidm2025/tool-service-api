@@ -1,0 +1,75 @@
+{
+    "StatusCode": 200,
+    "ErrorMessage": null,
+    "Response": {
+        "property_info": [
+            {
+                "name": "Walnut Property",
+                "address": "Admiral Drive",
+                "city": "Milton Keynes",
+                "state": "HAZELEY",
+                "zipcode": "MK8 0P",
+                "url": "https://www.flexlodginguk.com/milton-keynes/walnut-property/index.aspx",
+                "description": "",
+                "email": "walnut@yardi.com",
+                "phone": "1231231230",
+                "Latitude": 52.019867,
+                "Longitude": -0.811953,
+                "LocalTime": "10:46:55 AM",
+                "TimeZone": "America/Chicago"
+            }
+        ],
+        "office_hours": [
+            {
+                "Day": "Monday-Friday",
+                "StartTime": "09:00",
+                "EndTime": "18:00",
+                "Iday": 8
+            },
+            {
+                "Day": "Saturday-Sunday",
+                "StartTime": "10:00",
+                "EndTime": "17:00",
+                "Iday": 9
+            }
+        ],
+        "community_amenities": [
+            {
+                "AmenityName": "Furnished Units",
+                "ImageURL": "https://cdn.rcqatol.com/dmslivecafe/2/107570/FurnishedUnits.jpg",
+                "ImageAltText": ""
+            },
+            {
+                "AmenityName": "High-Speed Internet",
+                "ImageURL": "https://cdn.rcqatol.com/dmslivecafe/2/107570/1HighSpeedInternet.png",
+                "ImageAltText": "High-Speed Internet"
+            }
+        ],
+        "pet_policy": [],
+        "apartment_amenities": [],
+        "floorplans": [],
+        "lease_terms": {
+            "Terms": [
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18
+            ]
+        },
+        "application_fees": [],
+        "specials_and_promotions": [],
+        "affordable_housing_program": "Initiate the human_handoff tool",
+        "security_deposit": [],
+        "move_in_fees": []
+    },
+    "ErrorTrace": null
+}

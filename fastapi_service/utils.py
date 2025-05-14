@@ -23,47 +23,88 @@ def load_tools() -> List[type]:
     return tools
 
 
-def get_tool_metadata() -> List[Dict[str, Any]]:
-    tools = load_tools()
-    metadata = []
+# def get_tool_metadata() -> List[Dict[str, Any]]:
+#     tools = load_tools()
+#     metadata = []
 
-    print(f"Loaded tools: {tools}")  # Debugging line
+#     print(f"Loaded tools: {tools}")  # Debugging line
 
-    for tool in tools:
-        try:
-            run_signature = inspect.signature(tool.run)
-            parameters = list(run_signature.parameters.keys())[1:]  # skip 'self'
-            metadata.append({
-                "tool_name": tool.__name__,
-                "description": tool.__doc__ or "No description provided.",
-                "parameters": parameters
-            })
-            print(f"Tool metadata: {metadata[-1]}")  # Debugging line
-        except Exception as e:
-            print(f"Error processing tool {tool.__name__}: {e}")
-            continue
-    return metadata
+#     for tool in tools:
+#         try:
+#             run_signature = inspect.signature(tool.run)
+#             parameters = list(run_signature.parameters.keys())[1:]  # skip 'self'
+#             metadata.append({
+#                 "tool_name": tool.__name__,
+#                 "description": tool.__doc__ or "No description provided.",
+#                 "parameters": parameters
+#             })
+#             print(f"Tool metadata: {metadata[-1]}")  # Debugging line
+#         except Exception as e:
+#             print(f"Error processing tool {tool.__name__}: {e}")
+#             continue
+#     return metadata
 
 
-def get_tool_instances() -> Dict[str, Dict[str, Any]]:
-    tools = load_tools()
-    instances = {}
+# def get_tool_instances() -> Dict[str, Dict[str, Any]]:
+#     tools = load_tools()
+#     instances = {}
 
-    for tool in tools:
-        try:
-            run_signature = inspect.signature(tool.run)
-            parameters = list(run_signature.parameters.keys())[1:]
-            instance = tool()  # Create an instance of the tool
-            instances[tool.__name__] = {
-                "tool_name": tool.__name__,
-                "description": tool.__doc__ or "No description provided.",
-                "parameters": parameters,
-                "function": instance.run  # Link the function that can be called
-            }
-        except Exception as e:
-            print(f"Error instantiating tool {tool.__name__}: {e}")
-            continue
-    return instances
+#     for tool in tools:
+#         try:
+#             run_signature = inspect.signature(tool.run)
+#             parameters = list(run_signature.parameters.keys())[1:]
+#             instance = tool()  # Create an instance of the tool
+#             instances[tool.__name__] = {
+#                 "tool_name": tool.__name__,
+#                 "description": tool.__doc__ or "No description provided.",
+#                 "parameters": parameters,
+#                 "function": instance.run  # Link the function that can be called
+#             }
+#         except Exception as e:
+#             print(f"Error instantiating tool {tool.__name__}: {e}")
+#             continue
+#     return instances
+
+import requests
+import os
+
+MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "http://localhost:8000/mcp/")
+
+import os
+import asyncio
+from typing import List, Dict, Any
+from mcp import ClientSession
+from mcp.client.streamable_http import streamablehttp_client
+
+MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "http://localhost:8000/mcp/")
+
+def get_tool_metadata_from_mcp() -> List[Dict[str, Any]]:
+    async def _get_tools():
+        async with streamablehttp_client(MCP_SERVER_URL) as (read, write, _):
+            async with ClientSession(read, write) as session:
+                await session.initialize()
+                tools = await session.list_tools()
+                return [
+                    {
+                        "tool_name": tool.name,
+                        "description": tool.description or "",
+                        "parameters": list(tool.schema.get("parameters", {}).get("properties", {}).keys())
+                    }
+                    for tool in tools
+                ]
+
+    return asyncio.run(_get_tools())
+
+def call_mcp_tool(tool_name: str, arguments: dict) -> str:
+    async def _call():
+        async with streamablehttp_client(MCP_SERVER_URL) as (read, write, _):
+            async with ClientSession(read, write) as session:
+                await session.initialize()
+                result = await session.call_tool(tool_name, arguments)
+                return result
+
+    return asyncio.run(_call())
+
 
 def run_tool(tool_name: str, tool_parameters: Dict[str, Any]) -> Any:
     tools = load_tools()

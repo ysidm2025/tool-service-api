@@ -1,6 +1,9 @@
 # Combined FastAPI and ASP.NET WebAPI Project
 
+npx @modelcontextprotocol/inspector
+
 ## Overview
+
 This project contains two independent services that expose the same functionality using **FastAPI (Python)** and **ASP.NET WebAPI (C#/.NET)**. Both services allow you to interact with different tools that are dynamically loaded and executed via reflection or decorators/attributes.
 
 Additionally, the **FastAPI service integrates OpenAI's Agent SDK (Beta)** to define and run an AI assistant that intelligently chooses and executes tools based on user input.
@@ -8,6 +11,7 @@ Additionally, the **FastAPI service integrates OpenAI's Agent SDK (Beta)** to de
 ---
 
 ## FastAPI Service (with OpenAI Agent SDK)
+
 - **Port**: `8000`
 - **Endpoints**:
   - `GET /bot_capabilities`: Returns metadata of available tools (functions).
@@ -15,6 +19,7 @@ Additionally, the **FastAPI service integrates OpenAI's Agent SDK (Beta)** to de
   - `POST /ask_agent`: Uses the OpenAI Agent SDK to create an assistant, initiate a conversation thread, and return a response by selecting appropriate tools based on the query.
 
 ### 🔍 Agent SDK Features Used in `/ask_agent`
+
 - **Assistant creation** (`client.beta.assistants.create`): Defines agent with tools, instructions, and GPT model.
 - **Thread creation** (`client.beta.threads.create`): Manages ongoing conversation context.
 - **Message posting** (`threads.messages.create`): Sends user query to the assistant.
@@ -25,6 +30,7 @@ Additionally, the **FastAPI service integrates OpenAI's Agent SDK (Beta)** to de
 ---
 
 ## ASP.NET WebAPI Service
+
 - **Port**: `5048`
 - **Endpoints**:
   - `GET /bot_capabilities`: Returns metadata of available tools via reflection and `[FunctionTool]` attributes.
@@ -35,14 +41,20 @@ Additionally, the **FastAPI service integrates OpenAI's Agent SDK (Beta)** to de
 ## Running the Services
 
 ### ✅ FastAPI (Python)
+
 1. Install dependencies:
+
    ```bash
     pip install pydantic fastapi uvicorn openai
 
+   ```
+
 2. Set your OpenAI API key as an environment variable:
-  ```bash
-    export OPENAI_API_KEY="your-openai-key"
+
+````bash
+  export OPENAI_API_KEY="your-openai-key"
 
 3. Run the server:
-  ```bash
-    uvicorn main:app --reload --port 8000
+```bash
+  uvicorn main:app --reload --port 8000
+````

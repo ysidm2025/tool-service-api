@@ -1,0 +1,1 @@
+DB_URL = "mysql+aiomysql://root:root@127.0.0.1:3306/tool"
