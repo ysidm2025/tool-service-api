@@ -1,0 +1,18 @@
+[project]
+name = "mcp_project"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiomysql>=0.2.0",
+    "anthropic>=0.51.0",
+    "anyio>=4.9.0",
+    "fastapi>=0.115.12",
+    "httpx>=0.28.1",
+    "mcp[cli]>=1.7.1",
+    "python-dotenv>=1.1.0",
+    "requests>=2.32.3",
+    "sqlalchemy>=2.0.40",
+    "uvicorn>=0.34.2",
+]

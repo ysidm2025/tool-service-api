@@ -1,6 +1,6 @@
 # Combined FastAPI and ASP.NET WebAPI Project
 
-npx @modelcontextprotocol/inspector
+uv run python server.py
 
 ## Overview
 
