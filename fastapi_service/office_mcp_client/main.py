@@ -30,7 +30,7 @@ async def run_agent_query(query: str) -> str:
         with trace(workflow_name="FastAPI Agent", trace_id=trace_id):
             agent = Agent(
                 name="Assistant",
-                instructions="Use tools to answer the questions. and mention the tool name in the answer in the end format it as 'Tool: <tool_name>'",
+                instructions="Use tools to answer the questions and mention the tool name in the answer in the end, format it as 'Tool: <tool_name>'",
                 mcp_servers=[server],
                 model_settings=ModelSettings(tool_choice="required"),
             )

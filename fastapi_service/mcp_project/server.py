@@ -124,7 +124,7 @@ import anyio
 logging.basicConfig(level=logging.DEBUG)
 
 # Initialize MCP instance
-mcp = FastMCP("Unified Tool Server", stateless_http=True)
+mcp = FastMCP("Unified Tool Server", stateless_http=True, port=9090)
 
 # Load static tools
 load_static_tools(mcp)

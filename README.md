@@ -33,7 +33,7 @@ tool-service-api/
 - **Tool Execution**: Tools are dynamically discovered and executed via decorators.
 - **Extra**: `request.py` can be used to test raw JSON queries locally.
 
-### 🧠 Features of /mcp_project folder server
+### 🧠 Features of (`/mcp_project`) folder server
 
 - Static loader (MathTool, StringTool)
 - Dynamic loader (fetch tools from local MySQL database)

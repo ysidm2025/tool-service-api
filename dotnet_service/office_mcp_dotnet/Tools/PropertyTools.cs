@@ -1,22 +1,25 @@
-using System.Net.Http.Json;
-using System.ComponentModel;
-using System.Text.Json;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Reflection;
-using ModelContextProtocol.Server;
+using System.Net.Http.Json; // For sending HTTP requests with JSON content
+using System.ComponentModel; // For Description attribute
+using System.Text.Json; // For JSON parsing
+using System.Linq; // For LINQ operations
+using System.Collections.Generic; // For generic collections
+using System.Threading.Tasks; // For async/await
+using System.Reflection; // For reflection (not used directly here)
+using ModelContextProtocol.Server; // For MCP server attributes
 using System;
 
 namespace PropertyMcpServer.Tools
 {
+    // Helper class to resolve property data from API responses
     public static class PropertyResolver
     {
+        // Extracts a string or number property from a JsonElement as a string
         private static string GetStringOrNumberAsString(JsonElement element, string propertyName)
         {
             if (!element.TryGetProperty(propertyName, out JsonElement prop))
                 return null;
 
+            // Return the property as string or number (as string), or null if not present
             return prop.ValueKind switch
             {
                 JsonValueKind.String => prop.GetString(),
@@ -26,14 +29,16 @@ namespace PropertyMcpServer.Tools
             };
         }
 
+        // Main resolver: maps tool names to values in the API response
         public static string Resolve(string toolName, Dictionary<string, JsonElement> response)
         {
+            // If response is missing or doesn't have 'property_info', handle special cases
             if (response == null || !response.TryGetValue("property_info", out var propInfo))
             {
                 var keys = response?.Keys.ToList() ?? new List<string>();
                 Console.WriteLine($"Debug: 'property_info' key missing in response keys: [{string.Join(", ", keys)}]");
 
-                // For the special keys, return their default message if requested
+                // Default messages for special tool names if data is missing
                 var indirectDefaultMessages = new Dictionary<string, string>
                 {
                     ["property_reviews"] = "No reviews available in response.",
@@ -50,6 +55,7 @@ namespace PropertyMcpServer.Tools
             }
 
             JsonElement first = default;
+            // If property_info is an array, use the first element
             if (propInfo.ValueKind == JsonValueKind.Array)
             {
                 var enumerator = propInfo.EnumerateArray();
@@ -58,6 +64,7 @@ namespace PropertyMcpServer.Tools
 
                 first = enumerator.First();
             }
+            // If property_info is an object, use it directly
             else if (propInfo.ValueKind == JsonValueKind.Object)
             {
                 first = propInfo;
@@ -67,7 +74,7 @@ namespace PropertyMcpServer.Tools
                 return $"No data available for '{toolName}'.";
             }
 
-            // Prepare indirect values from the first property_info element
+            // Map tool names to values extracted from the property_info object
             var indirectMap = new Dictionary<string, string>
             {
                 ["property_email"] = GetStringOrNumberAsString(first, "email"),
@@ -75,7 +82,7 @@ namespace PropertyMcpServer.Tools
                 ["property_number"] = GetStringOrNumberAsString(first, "phone"),
                 ["maps_and_directions"] = $"{GetStringOrNumberAsString(first, "address")}, {GetStringOrNumberAsString(first, "city")}, {GetStringOrNumberAsString(first, "state")} - Lat: {GetStringOrNumberAsString(first, "Latitude")}, Lon: {GetStringOrNumberAsString(first, "Longitude")}",
 
-                // These keys have default "not available" messages if missing
+                // Default messages for these keys if not present
                 ["property_reviews"] = "No reviews available in response.",
                 ["apartment_availability"] = "Not directly available in API response.",
                 ["current_resident"] = "Not available in response.",
@@ -83,27 +90,25 @@ namespace PropertyMcpServer.Tools
 
             };
 
-            // --- New behavior: Check ALL keys from indirectMap, but only for requested toolName ---
-
+            // If the requested toolName is in the indirectMap, return its value
             if (indirectMap.ContainsKey(toolName))
             {
-                // If the indirectMap value is one of the 4 default "not available" messages, 
-                // try to check if the actual response has the data (for future-proofing)
+                // For special keys, check if actual data is present in the response
                 if (toolName == "property_reviews" || toolName == "apartment_availability" || toolName == "current_resident" || toolName == "photo_gallery")
                 {
                     if (response.TryGetValue(toolName, out var section))
                     {
-                        // If data is present and not empty/null, return it as string
+                        // Return the section as string if present
                         var sectionStr = section.ToString();
                         if (!string.IsNullOrWhiteSpace(sectionStr) && sectionStr != "null")
                             return sectionStr;
                     }
-                    // Otherwise, return the default "not available" message from indirectMap
+                    // Otherwise, return the default message
                     return indirectMap[toolName];
                 }
                 else
                 {
-                    // For other indirect keys, return the value if not null
+                    // For other keys, return the value if not null
                     if (!string.IsNullOrEmpty(indirectMap[toolName]))
                         return indirectMap[toolName];
                     else
@@ -111,7 +116,7 @@ namespace PropertyMcpServer.Tools
                 }
             }
 
-            // If toolName is not in indirectMap, try to find it directly in the response dictionary
+            // If toolName is not in indirectMap, try to find it directly in the response
             if (response.TryGetValue(toolName, out var directSection))
             {
                 var directStr = directSection.ToString();
@@ -124,16 +129,21 @@ namespace PropertyMcpServer.Tools
         }
     }
 
+    // Main tool class for property-related MCP tools
     [McpServerToolType]
     public sealed class PropertyTools
     {
+        // API endpoint for property data
         private static readonly string Endpoint = "https://chatiqnet.rcqatol.com/25-5-0/openaibot/ai/propertysummary";
+        // Shared HttpClient instance
         private static readonly HttpClient client = new();
 
+        // Fetches property data from the API using provided parameters
         private async Task<Dictionary<string, JsonElement>> FetchPropertyData(string objecttype, string objectid, string queryText)
         {
             try
             {
+                // Prepare payload with default values if parameters are missing
                 var payload = new Dictionary<string, string>
                 {
                     ["objecttype"] = string.IsNullOrEmpty(objecttype) ? "3" : objecttype,
@@ -141,12 +151,15 @@ namespace PropertyMcpServer.Tools
                     ["QueryText"] = string.IsNullOrEmpty(queryText) ? "propertyinfo" : queryText
                 };
 
+                // Send POST request to the API
                 var response = await client.PostAsJsonAsync(Endpoint, payload);
                 response.EnsureSuccessStatusCode();
 
+                // Read raw response as string
                 var raw = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"Raw API response: {raw}"); // DEBUG
 
+                // Parse response as dictionary
                 var parsed = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(raw);
                 if (parsed == null)
                 {
@@ -154,6 +167,7 @@ namespace PropertyMcpServer.Tools
                     return new();
                 }
 
+                // Extract inner 'Response' object if present
                 if (parsed.TryGetValue("Response", out var responseElement))
                 {
                     var innerData = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(responseElement.GetRawText());
@@ -178,6 +192,7 @@ namespace PropertyMcpServer.Tools
             }
         }
 
+        // Calls FetchPropertyData and resolves the result for the given tool
         private async Task<string> ResolveByCaller(string toolName, string objecttype, string objectid, string queryText)
         {
             try
@@ -192,6 +207,7 @@ namespace PropertyMcpServer.Tools
             }
         }
 
+        // Each method below is exposed as an MCP tool and fetches a specific property field
         [McpServerTool(Name = "pet_policy"), Description("Pet policy info")]
         public Task<string> PetPolicy(string objecttype = "3", string objectid = "510835", string queryText = "propertyinfo")
             => ResolveByCaller("pet_policy", objecttype, objectid, queryText);
