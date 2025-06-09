@@ -37,6 +37,7 @@ tool-service-api/
 
 - Static loader (MathTool, StringTool)
 - Dynamic loader (fetch tools from local MySQL database)
+- **Default MCP URL**: `http://localhost:8000/sse` 
 
 ### ✅ Setup & Running intended mcp server (Python)
 
